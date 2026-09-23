@@ -82,21 +82,62 @@ def fallback_split(
 
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+     Split short campus-life posts on paragraph boundaries.
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
-
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    Strategy:
+    - Keep paragraphs intact so sentences are not cut in half.
+    - Aim for chunks of about 500 characters or less.
+    - Reuse the final paragraph of the previous chunk as overlap when possible,
+      so context is preserved across neighboring chunks.
     """
+    max_chars = 500
+    chunks: list[Chunk] = []
+
+    for doc in documents:
+        paragraphs = [p.strip() for p in doc.text.split("\n\n") if p.strip()]
+
+        current: list[str] = []
+        current_length = 0
+        index = 0
+
+        for paragraph in paragraphs:
+            extra_length = len(paragraph) + (2 if current else 0)
+
+            if current and current_length + extra_length > max_chars:
+                text = "\n\n".join(current)
+
+                chunks.append(
+                    Chunk(
+                        text=text,
+                        source=doc.source,
+                        index=index,
+                        produced_by="chunker.py::split_documents",
+                    )
+                )
+                index += 1
+
+                # One-paragraph overlap keeps some context between chunks.
+                current = [current[-1]]
+                current_length = len(current[0])
+
+            if current:
+                current_length += 2 + len(paragraph)
+            else:
+                current_length = len(paragraph)
+
+            current.append(paragraph)
+
+        if current:
+            chunks.append(
+                Chunk(
+                    text="\n\n".join(current),
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
     return fallback_split(documents)
 
 
