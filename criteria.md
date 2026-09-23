@@ -23,8 +23,10 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+I chose 4 out of 5 because the campus life corpus contins many short documents
+covering related campus topics, so I expect retrieval to work well but not be
+perfect. Allowing one miss gives me a realistic way to ideentify where semantic  
+search may confuse similar topics without makng the target tooo easy.
 
 ---
 
@@ -33,16 +35,13 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+I chose every answer becoz source attributionn is a core requirement of a
+grounded RAG system. If the system gives an answer from retrieved documents,
+it should always be able to identify whch document supported that answer.
 
 ---
 
 ## 3. The relevance gate stops out-of-corpus questions
-
-When I ask a question my documents clearly don't cover, the relevance gate
-stops it and the system returns "I don't have enough information about that" —
-in at least 4 of 5 tries.
 
 <!-- The five questions are the ones in `OUT_OF_SCOPE` at the bottom of
      `questions.py`, and `run_eval.py` puts them through the gate and writes
@@ -50,9 +49,11 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
 
+I chose 4 out of 5 because semantic search may occasionally retrieve a document
+that appears related even when the question is outside the corpus. The system
+should reject most unsupported questions rather than passing weak evidence to
+the model and risking an unsupported answer.
 ---
 
 ## 4. Something about your chunks
@@ -73,7 +74,10 @@ in at least 4 of 5 tries.
 
 **Why this target:**
 
-
+The campus_life documents are relatively short, and the starter produced 88
+chunks from 88 documents, so many documents are already close to a useful
+standalone size. I chose 4 of 5 because I want most chunks to preserve complete
+ideas while allowing for an occasional document that may require splitting.
 
 ---
 
@@ -91,7 +95,10 @@ in at least 4 of 5 tries.
 
 **Why this target:**
 
-
+Simply displaying a filename does not prove that an answer is grounded. I chose
+4 of 5 because I want the citation to be meaningful and verifiable, while
+allowing one case where retrieval or generation may select a source that is
+related but not strong enough to fully support the answer
 
 ---
 
