@@ -216,11 +216,73 @@ refused it before a model call was made.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Sampled chunks are understandable on their own | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Cited source actually supports the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+### Evidence from the before run
+
+**Criterion 1 — retrieval contained the answer**
+
+For the housing lottery question, retrieval returned:
+
+`admin_housing_lottery.txt`
+
+Best distance: `0.2050`
+
+The generated answer was:
+
+> Juniors and seniors are ordered by accumulated credit hours first, with ties broken randomly.
+>
+> Source: admin_housing_lottery.txt
+
+The other four test questions also retrieved a document containing the correct answer.
+
+**Criterion 2 — every answer named a source**
+
+Example:
+
+> You need to have your adviser hold lifted before you can register.
+>
+> Source: advising_registration.txt
+
+All generated answers in the three runs named at least one source document.
+
+**Criterion 3 — gate stopped out-of-scope questions**
+
+The relevance gate refused all five out-of-scope questions:
+
+- Capital of Mongolia — distance 0.825
+- Diesel engine oil change — distance 0.934
+- 1994 World Cup — distance 0.886
+- Ibuprofen dosage — distance 0.844
+- Rust for loop — distance 0.896
+
+Result: `5 of 5 refused`
+
+**Criterion 4 — sampled chunks were understandable on their own**
+
+The five chunks inspected in Unit 1 remained complete standalone thoughts.
+All five could answer a question without requiring the previous or next chunk.
+
+Result: `5 of 5`
+
+Produced by: `chunker.py::split_documents`
+
+**Criterion 5 — cited source supported the answer**
+
+Example:
+
+> The best time to do laundry in Aldridge Hall is Tuesday or Wednesday morning.
+>
+> Source: housing_aldridge_hall_laundry.txt
+
+The cited document directly contains the statement that the best time is
+Tuesday or Wednesday morning.
+
+All five test questions had citations that supported the generated answer.
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
@@ -239,30 +301,25 @@ refused it before a model call was made.
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All 5 test questions retrieved a chunk containing the needed answer in all three runs, exceeding the 4-of-5 target. |
+| 2 | Every answer names a source | MET | All generated answers named at least one source document in all three runs. |
+| 3 | The relevance gate stops out-of-corpus questions | MET | The gate refused all 5 out-of-scope questions, exceeding the 4-of-5 target. |
+| 4 | Sampled chunks are understandable on their own | MET | All 5 sampled chunks remained readable as standalone thoughts, exceeding the 4-of-5 target. |
+| 5 | The cited source actually supports the answer | MET | For all 5 test questions, the cited document contained information that directly supported the answer. |
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+No acceptance criterion was missed in the before test.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+The system met all five original targets across the three runs. This suggests
+that the original criteria were achievable for the selected `campus_life`
+corpus and the five test questions.
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
+Because every criterion passed, the criterion I would tighten is Criterion 1.
+Instead of requiring the retrieved chunks to contain the answer for at least
+4 of 5 questions, I would require all 5 of 5 questions to retrieve a chunk
+containing the answer. The before test already achieved 5 of 5 consistently,
+so the original 4-of-5 target appears conservative.
      Milestone 3. -->
 
 ## The Improvement
