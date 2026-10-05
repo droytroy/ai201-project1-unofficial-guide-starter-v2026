@@ -243,9 +243,16 @@ The other four test questions also retrieved a document containing the correct a
 **Criterion 2 — every answer named a source**
 
 Example:
-
 > You need to have your adviser hold lifted before you can register.
->
+>I used an AI assistant to help organize the before and after evaluation results
+and compare them against the acceptance criteria I had already written. I used
+the actual outputs from `run_eval.py` to make the final MET or MISSED decisions
+rather than changing the original targets.
+
+I also used the assistant to compare the top-k 5 and top-k 3 runs. I kept the
+top-k 3 change because the correct source remained available for all five test
+questions and all five out-of-scope questions continued to be rejected.
+
 > Source: advising_registration.txt
 
 All generated answers in the three runs named at least one source document.
