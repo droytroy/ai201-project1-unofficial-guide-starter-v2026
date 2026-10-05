@@ -1,4 +1,4 @@
-# Acceptance criteria — The Unofficial Guide
+code criteria.md# Acceptance criteria — The Unofficial Guide
 
 Five criteria that say what "working" means for this system, written in unit 1
 **before** any results existed.
@@ -43,10 +43,8 @@ it should always be able to identify whch document supported that answer.
 
 ## 3. The relevance gate stops out-of-corpus questions
 
-<!-- The five questions are the ones in `OUT_OF_SCOPE` at the bottom of
-     `questions.py`, and `run_eval.py` puts them through the gate and writes
-     what happened into your run log. Swap them for your own if you'd rather —
-     just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
+For at least 4 of my 5 out-of-scope questions, the relevance gate refuses the
+question before a model call is made
 
 **Why this target:**
 
@@ -58,17 +56,9 @@ the model and risking an unsupported answer.
 
 ## 4. Something about your chunks
 
-<!-- YOU WRITE THIS ONE.
-
-     How would you know if your chunks were the right size? Name something
-     countable or observable.
-
-     Examples of the right shape — don't copy these, they should come from
-     what you actually saw in Milestone 3:
-       - "At least 4 of 5 sampled chunks read as a complete thought, with no
-          sentence cut in half at either end."
-       - "No chunk is shorter than 200 characters, since anything below that
-          in my corpus turned out to be a heading with no content under it." -->
+At least 4 of 5 sampled chunks should read as complete thoughts and contain
+enough context to understand the information without needing the previous or
+next chunk.
 
 
 
@@ -83,13 +73,8 @@ ideas while allowing for an occasional document that may require splitting.
 
 ## 5. Your choice
 
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. It could be about
-     speed, about refusals, about a particular kind of question your corpus
-     handles badly, about source attribution being correct rather than merely
-     present — anything, as long as it names a number or an observable
-     outcome. -->
+For at least 4 of my 5 test questions, the source document named in the answer
+must contain information that directly supports the answer given.
 
 
 
