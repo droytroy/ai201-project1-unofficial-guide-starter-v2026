@@ -46,6 +46,10 @@ it should always be able to identify whch document supported that answer.
 For at least 4 of my 5 out-of-scope questions, the relevance gate refuses the
 question before a model call is made
 
+At least 4 of 5 sampled chunks should read as complete thoughts and contain
+enough context to understand the information without needing the previous or
+next chunk.
+
 **Why this target:**
 
 I chose 4 out of 5 because semantic search may occasionally retrieve a document
@@ -75,8 +79,6 @@ ideas while allowing for an occasional document that may require splitting.
 
 For at least 4 of my 5 test questions, the source document named in the answer
 must contain information that directly supports the answer given.
-
-
 
 **Why this target:**
 
