@@ -122,6 +122,12 @@ timing comes from `housing_aldridge_hall_laundry.txt`).
 
 **My relevance cutoff:** `0.6`
 
+**Top-k:** `5`
+
+I kept top-k at 5 because the correct source appeared as the first retrieval
+result for all five of my in-corpus test questions. Increasing it was not
+necessary for these tests.
+
 I tested all five questions that the corpus should answer and all five
 out-of-scope questions. Lower distance means the retrieved document is more
 semantically similar to the question.
