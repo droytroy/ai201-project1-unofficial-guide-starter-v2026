@@ -170,18 +170,15 @@ instruction.
 
 ## How I Used AI
 
-**1. Chunking strategy**
+**1.  Unit 2 evaluation**
 
-I used an AI assistant to help me understand the starter chunking logic and
-compare alternative chunking strategies for the short `campus_life` documents.
-The suggested approach was paragraph-aware chunking with a soft 500-character
-target and one-paragraph overlap instead of fixed 800-character windows.
+I used an AI assistant to help organize the before and after evaluation results
+and compare them against the acceptance criteria I had already written. I used
+the actual outputs from `run_eval.py` to make the final MET or MISSED decisions.
 
-I implemented the approach and verified it against the actual corpus rather
-than accepting the suggestion automatically. The starter produced 88 chunks
-with a longest chunk of 549 characters. My implementation produced 90 chunks
-with a longest chunk of 461 characters. I also manually reviewed five generated
-chunks to confirm they remained understandable on their own.
+I also used the assistant to compare the top-k 5 and top-k 3 runs. I kept the
+top-k 3 change because the correct source remained available for all five test
+questions and all five out-of-scope questions continued to be rejected.
 
 **2. Relevance cutoff**
 
@@ -245,14 +242,6 @@ The other four test questions also retrieved a document containing the correct a
 Example:
 > You need to have your adviser hold lifted before you can register.
 
-
-and compare them against the acceptance criteria I had already written. I used
-the actual outputs from `run_eval.py` to make the final MET or MISSED decisions
-rather than changing the original targets.
-
-I also used the assistant to compare the top-k 5 and top-k 3 runs. I kept the
-top-k 3 change because the correct source remained available for all five test
-questions and all five out-of-scope questions continued to be rejected.
 
 > Source: advising_registration.txt
 
@@ -330,3 +319,92 @@ containing the answer. The before test already achieved 5 of 5 consistently,
 so the original 4-of-5 target appears conservative.
      Milestone 3. -->
 
+## The Improvement
+
+**What I changed:**
+
+I reduced `top-k` from 5 retrieved chunks to 3 retrieved chunks.
+
+**Why I picked it:**
+
+In the before test, the correct source was already near the top for all five
+test questions. The fourth and fifth retrieved chunks often added related but
+unnecessary documents.
+
+Since all five original criteria were already met, I tested whether I could
+reduce retrieval noise without hurting answer quality.
+
+### Run Log — After
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Sampled chunks are understandable on their own | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Cited source actually supports the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+### Evidence from the after run
+
+For the housing lottery question, the system retrieved
+`admin_housing_lottery.txt` with a best distance of `0.2050`.
+
+The answer correctly stated that juniors and seniors are ordered by accumulated
+credit hours first and cited `admin_housing_lottery.txt`.
+
+The parking question correctly returned about three days and cited
+`admin_parking_permits.txt`.
+
+The adviser-registration question correctly stated that the adviser hold must
+be lifted and cited `advising_registration.txt`.
+
+The Aldridge Hall laundry question correctly returned Tuesday or Wednesday
+morning and cited `housing_aldridge_hall_laundry.txt`.
+
+The Halden Hall question correctly returned that waits are rarely more than
+8 minutes even at noon and cited `dining_halden_hall.txt`.
+
+The relevance gate also refused all five out-of-scope questions.
+
+Result: `5 of 5 refused`.
+
+**Did it help?**
+
+Yes, mainly by reducing unnecessary retrieved context rather than increasing
+accuracy.
+
+Reducing top-k from 5 to 3 did not cause any acceptance criterion to fail.
+All five criteria remained MET.
+
+The before evaluation used 9,216 total model tokens, while the after evaluation
+used 6,456 total model tokens. Generated answer length varies between runs, so
+the entire reduction cannot be attributed to top-k alone, but the smaller
+retrieval set provided less unnecessary context while preserving the same
+measured performance.
+
+## What's Still Broken
+
+No original acceptance criterion remained missed after the improvement.
+
+However, the evaluation only used five in-corpus questions and five
+out-of-scope questions. This does not prove that the system will perform equally
+well on every possible campus-life question.
+
+The adviser-registration question had the weakest in-corpus retrieval distance
+at `0.4315`, so I would test more borderline questions before making the `0.6`
+relevance cutoff stricter.
+
+## What I'd Do Differently
+
+I would make Criterion 1 stricter.
+
+The original criterion required at least 4 of 5 questions to retrieve a chunk
+containing the answer. Both the before and after evaluations achieved 5 of 5.
+
+If I wrote the criterion again, I would use:
+
+> For all 5 test questions, at least one of the top three retrieved chunks
+> contains the information needed to answer the question.
+
+This better matches the performance demonstrated by the system after changing
+top-k to 3.
