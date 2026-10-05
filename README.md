@@ -1,59 +1,50 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
-
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
-
----
+*Dev Rajpuriya — Corpus: `campus_life`**
 
 # Unit 1
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
+The Unofficial Guide is a retrieval-augmented generation (RAG) system built
+over the `campus_life` corpus. The corpus contains 88 documents covering
+student-life topics such as housing, dining, courses, registration, parking,
+laundry, and campus services.
 
-     Milestone 5. -->
+When a user asks a question, the system searches the corpus for the most
+relevant chunks and gives those chunks to the language model as context. The
+model answers using the retrieved documents and names the source it used. If
+the retrieved information is not relevant enough, the system refuses to answer
+instead of guessing.
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** Soft maximum of about 500 characters
 
-<!-- What about YOUR documents made you pick these numbers? Short posts and
-     long sectioned guides don't want the same chunking, and "800 seemed
-     reasonable" earns nothing. Point at something you noticed when you read
-     the documents in Milestone 1.
+**Overlap:** One paragraph
 
-     If you changed your mind partway through, say so and say why. That's worth
-     more than pretending you got it right first time.
+The `campus_life` corpus contains mostly short posts. With the starter
+800-character fixed-window chunker, the corpus produced 88 chunks from 88
+documents. This showed that most documents were short enough that they were
+not being split at all.
 
-     Milestone 3. -->
+Most whole-document chunks were readable, but some longer posts contained
+several different ideas in the same chunk. For example, a housing post could
+contain room information, air conditioning, laundry, and noise together.
+
+I replaced the fixed character-window strategy with paragraph-aware chunking.
+The new strategy keeps paragraphs intact instead of cutting through sentences,
+uses a soft target of about 500 characters, and keeps one paragraph of overlap
+between neighboring chunks when a document has to be split.
+
+After the change, the corpus produced 90 chunks with an average length of 311
+characters. The shortest chunk was 178 characters and the longest was 461
+characters. This was only two more chunks than the starter, so the documents
+were not over-split, while the longest chunks became smaller and more focused.
 
 ## Sample Chunks
 
-<!-- Five chunks, pasted as text. Label each one and name the file it came from
-     AND the function that produced it — the grader checks your code against
-     what you claim here.
-
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
-     across.
-
-     Milestone 3. -->
-
-**Chunk 1** — source: admin_add_drop_deadline.txt#0 `` — produced by: chunker.py::split_documents``
+**Chunk 1** — source: `admin_add_drop_deadline.txt#0` — produced by: `chunker.py::split_documents`
 
 On the add/drop deadline
 
@@ -62,8 +53,9 @@ window — through the end of week six — but a drop after week two shows as a 
 on your transcript. Nothing anywhere on the registrar's site says this plainly,
 and students find out from each other.
 
+---
 
-**Chunk 2** — source:course_biol_160_exams.txt#0 `` — produced by:chunker.py::split_documents ``
+**Chunk 2** — source: `course_biol_160_exams.txt#0` — produced by: `chunker.py::split_documents`
 
 BIOL 160 Cell Biology — assessment
 
@@ -72,7 +64,9 @@ Four unit tests and a cumulative final. Not curved.
 The unit tests come fast, roughly every three weeks; falling behind once is very
 hard to recover from.
 
-**Chunk 3** — source:course_math_220_exams.txt#0 `` — produced by: chunker.py::split_documents ``
+---
+
+**Chunk 3** — source: `course_math_220_exams.txt#0` — produced by: `chunker.py::split_documents`
 
 MATH 220 Linear Algebra — assessment
 
@@ -81,8 +75,9 @@ Two midterms and a cumulative final. Curved to a B- median.
 The problem sets are the course; the lectures make sense afterwards rather than
 during.
 
+---
 
-**Chunk 4** — source:dining_the_ridgeway_cafe.txt#0 `` — produced by:chunker.py::split_documents ``
+**Chunk 4** — source: `dining_the_ridgeway_cafe.txt#0` — produced by: `chunker.py::split_documents`
 
 The Ridgeway Café
 
@@ -93,7 +88,9 @@ to know is that seating is tight; about 40 seats for a building of 900.
 Hours are 7:00am to 4:00pm weekdays only. Costs declining balance only, no meal
 swipes.
 
-**Chunk 5** — source:housing_morrow_house.txt#0 `` — produced by:`chunker.py::split_documents```
+---
+
+**Chunk 5** — source: `housing_morrow_house.txt#0` — produced by: `chunker.py::split_documents`
 
 Morrow House — what it's actually like
 
@@ -111,50 +108,85 @@ Laundry costs $1.50 wash, $1.25 dry, coin or card. On noise: loud until about
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
-
 **Question:**
+
+When is the best time to do laundry in Aldridge Hall?
 
 **Answer:**
 
-```
-```
+The best time to do laundry in Aldridge Hall is Tuesday or Wednesday morning.
 
-**My relevance cutoff:**
+Source: `housing_aldridge_hall_laundry.txt` (also mentioned in
+`housing_aldridge_hall.txt` regarding laundry details, though the specific
+timing comes from `housing_aldridge_hall_laundry.txt`).
 
-<!-- The number you set in config.py, and how you got there.
+**My relevance cutoff:** `0.6`
 
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+I tested all five questions that the corpus should answer and all five
+out-of-scope questions. Lower distance means the retrieved document is more
+semantically similar to the question.
 
 | Question | In corpus? | Best distance |
-|---|---|---|
-|  |  |  |
+|---|---|---:|
+| How are juniors and seniors prioritized in the housing lottery? | Yes | 0.2050 |
+| How quickly do student parking permits for the west lots usually sell out? | Yes | 0.1856 |
+| What must happen with my adviser before I can register for classes? | Yes | 0.4315 |
+| When is the best time to do laundry in Aldridge Hall? | Yes | 0.3021 |
+| How long are wait times at Halden Hall even at noon? | Yes | 0.2118 |
+| What is the capital of Mongolia? | No | 0.8246 |
+| How do I change the oil in a diesel engine? | No | 0.9340 |
+| Who won the 1994 World Cup? | No | 0.8859 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.8442 |
+| How do I write a for loop in Rust? | No | 0.8960 |
+
+The highest best-distance among the five questions the corpus should answer was
+0.4315. The lowest best-distance among the five out-of-scope questions was
+0.8246. This created a large gap between the two groups.
+
+Because the existing cutoff of 0.6 falls safely inside that gap, I kept it
+rather than changing it without evidence. With the 0.6 cutoff, all five
+in-corpus questions passed the gate and all five out-of-scope questions were
+refused.
+
+For example, asking:
+
+**Question:** Who won the 1994 World Cup?
+
+returned:
+
+> I don't have enough information about that.
+
+I also inspected the grounding instruction sent to the model. It tells the
+model to use only the provided documents, not guess when the documents do not
+cover the question, and name the source document. The generated Aldridge Hall
+answer followed those instructions, so I kept the existing grounding
+instruction.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
+**1. Chunking strategy**
 
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
+I used an AI assistant to help me understand the starter chunking logic and
+compare alternative chunking strategies for the short `campus_life` documents.
+The suggested approach was paragraph-aware chunking with a soft 500-character
+target and one-paragraph overlap instead of fixed 800-character windows.
 
-     Milestone 5. -->
+I implemented the approach and verified it against the actual corpus rather
+than accepting the suggestion automatically. The starter produced 88 chunks
+with a longest chunk of 549 characters. My implementation produced 90 chunks
+with a longest chunk of 461 characters. I also manually reviewed five generated
+chunks to confirm they remained understandable on their own.
 
-**1.**
+**2. Relevance cutoff**
 
-**2.**
+I used an AI assistant to help interpret the retrieval-distance results after
+running five in-corpus questions and five out-of-scope questions.
 
-<!-- ── Stretch features ─────────────────────────────────────────────────────
-     Doing one? Say so here BEFORE you start. A feature this README never
-     claims earns nothing.
-     ───────────────────────────────────────────────────────────────────────── -->
+The in-corpus distances ranged from 0.1856 to 0.4315, while the out-of-scope
+distances ranged from 0.8246 to 0.9340. Based on this separation, I kept the
+existing 0.6 relevance cutoff rather than changing it without evidence. I then
+tested an unrelated World Cup question and confirmed that the relevance gate
+refused it before a model call was made.
 
 ---
 
