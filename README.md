@@ -244,7 +244,8 @@ The other four test questions also retrieved a document containing the correct a
 
 Example:
 > You need to have your adviser hold lifted before you can register.
->I used an AI assistant to help organize the before and after evaluation results
+
+
 and compare them against the acceptance criteria I had already written. I used
 the actual outputs from `run_eval.py` to make the final MET or MISSED decisions
 rather than changing the original targets.
@@ -329,50 +330,3 @@ containing the answer. The before test already achieved 5 of 5 consistently,
 so the original 4-of-5 target appears conservative.
      Milestone 3. -->
 
-## The Improvement
-
-**What I changed:**
-
-**Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
-
-### Run Log — After
-
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
-| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
-|---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
-
-**Did it help?**
-
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
-
-     Milestone 4. -->
-
-## What's Still Broken
-
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
-
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
-
-## What I'd Do Differently
-
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
-
-     Milestone 5. -->
